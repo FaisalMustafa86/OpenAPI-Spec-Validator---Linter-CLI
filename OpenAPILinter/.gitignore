@@ -1,0 +1,32 @@
+# Build results
+bin/
+obj/
+.vs/
+.vscode/
+
+# NuGet
+*.nupkg
+*.snupkg
+
+# User-specific files
+*.user
+*.userosscache
+*.sln.docstates
+
+# Test Results
+TestResults/
+*.trx
+
+# Build output
+publish/
+out/
+
+# IDE
+.idea/
+*.swp
+*.swo
+*~
+
+# OS
+.DS_Store
+Thumbs.db

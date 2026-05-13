@@ -1,0 +1,266 @@
+openapi: 3.0.0
+info:
+  title: User Management API
+  version: 1.0.0
+  description: A comprehensive API for managing user accounts and profiles
+
+paths:
+  /users:
+    get:
+      operationId: listUsers
+      summary: Get all users
+      description: Retrieves a paginated list of all users in the system
+      tags:
+        - Users
+      responses:
+        200:
+          description: Successfully retrieved list of users
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/User'
+        400:
+          description: Invalid query parameters
+        500:
+          description: Server error occurred while retrieving users
+
+    post:
+      operationId: createUser
+      summary: Create a new user
+      description: Creates a new user account with the provided information
+      tags:
+        - Users
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateUserRequest'
+      responses:
+        201:
+          description: User created successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/User'
+        400:
+          description: Invalid user data provided
+        409:
+          description: User already exists
+        500:
+          description: Server error occurred while creating user
+
+  /users/{userId}:
+    get:
+      operationId: getUser
+      summary: Get a specific user
+      description: Retrieves detailed information about a specific user by their ID
+      tags:
+        - Users
+      parameters:
+        - name: userId
+          in: path
+          required: true
+          description: The unique identifier of the user
+          schema:
+            type: string
+            format: uuid
+      responses:
+        200:
+          description: User found and returned successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/User'
+        404:
+          description: User not found
+        500:
+          description: Server error occurred while retrieving user
+
+    put:
+      operationId: updateUser
+      summary: Update user information
+      description: Updates the information of an existing user
+      tags:
+        - Users
+      parameters:
+        - name: userId
+          in: path
+          required: true
+          description: The unique identifier of the user to update
+          schema:
+            type: string
+            format: uuid
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UpdateUserRequest'
+      responses:
+        200:
+          description: User updated successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/User'
+        400:
+          description: Invalid update data provided
+        404:
+          description: User not found
+        500:
+          description: Server error occurred while updating user
+
+    delete:
+      operationId: deleteUser
+      summary: Delete a user
+      description: Permanently deletes a user account and all associated data
+      tags:
+        - Users
+      parameters:
+        - name: userId
+          in: path
+          required: true
+          description: The unique identifier of the user to delete
+          schema:
+            type: string
+            format: uuid
+      responses:
+        204:
+          description: User deleted successfully
+        404:
+          description: User not found
+        500:
+          description: Server error occurred while deleting user
+
+  /users/{userId}/profile:
+    get:
+      operationId: getUserProfile
+      summary: Get user profile details
+      description: Retrieves the detailed profile information for a specific user
+      tags:
+        - User Profiles
+      parameters:
+        - name: userId
+          in: path
+          required: true
+          description: The unique identifier of the user
+          schema:
+            type: string
+            format: uuid
+      responses:
+        200:
+          description: User profile retrieved successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UserProfile'
+        404:
+          description: User or profile not found
+        500:
+          description: Server error occurred
+
+components:
+  schemas:
+    User:
+      type: object
+      description: Represents a user in the system
+      required:
+        - id
+        - name
+        - email
+      properties:
+        id:
+          type: string
+          format: uuid
+          description: Unique identifier for the user
+        name:
+          type: string
+          description: Full name of the user
+        email:
+          type: string
+          format: email
+          description: Email address of the user
+        age:
+          type: integer
+          description: Age of the user in years
+        createdAt:
+          type: string
+          format: date-time
+          description: Timestamp when the user account was created
+        updatedAt:
+          type: string
+          format: date-time
+          description: Timestamp when the user account was last updated
+
+    UserProfile:
+      type: object
+      description: Extended profile information for a user
+      properties:
+        userId:
+          type: string
+          format: uuid
+          description: Reference to the user
+        bio:
+          type: string
+          description: User biography or about section
+        avatar:
+          type: string
+          format: uri
+          description: URL to user's profile picture
+        address:
+          $ref: '#/components/schemas/Address'
+        phone:
+          type: string
+          description: Contact phone number
+
+    Address:
+      type: object
+      description: Physical address information
+      properties:
+        street:
+          type: string
+          description: Street address
+        city:
+          type: string
+          description: City name
+        state:
+          type: string
+          description: State or province
+        zipCode:
+          type: string
+          description: Postal code or zip code
+        country:
+          type: string
+          description: Country name
+
+    CreateUserRequest:
+      type: object
+      description: Request body for creating a new user
+      required:
+        - name
+        - email
+      properties:
+        name:
+          type: string
+          description: Full name of the new user
+        email:
+          type: string
+          format: email
+          description: Email address for the new user account
+        age:
+          type: integer
+          description: Age of the user
+
+    UpdateUserRequest:
+      type: object
+      description: Request body for updating user information
+      properties:
+        name:
+          type: string
+          description: Updated full name
+        age:
+          type: integer
+          description: Updated age
